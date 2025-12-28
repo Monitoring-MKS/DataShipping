@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reporting Shipping v2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; padding: 2px; margin: 0; }
+        .window-frame { background-color: #fff; border-radius: 4px; max-width: 800px; margin: auto; overflow: hidden; border: 1px solid #ccc; }
+        .window-header { background: #2c3e50; color: white; padding: 4px 10px; font-size: 11px; display: flex; justify-content: space-between; }
+        .filter-area { padding: 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #f8f9fa; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 9px; color: #666; margin-bottom: 1px; font-weight: bold; }
+        input, select { padding: 2px 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px; height: 26px; outline: none; }
+        .action-area { padding: 4px 5px; background: #fff; }
+        .btn-proses { background-color: #2c3e50; color: white; border: none; padding: 6px; font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; font-size: 12px; }
+        .table-container { border-top: 1px solid #eee; height: calc(100vh - 180px); overflow: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        thead th { background: #fdfdfd; padding: 5px; border-bottom: 2px solid #eee; position: sticky; top: 0; text-align: left; font-size: 10px; }
+        tbody td { padding: 4px 6px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+        .col-qty { background-color: #e3f2fd; color: #0d47a1; font-weight: bold; font-size: 12px; text-align: center; }
+        .footer-qty { padding: 6px 12px; background: #2c3e50; color: white; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; }
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    </style>
+</head>
+<body>
+
+<div id="loader"><i class="fas fa-circle-notch fa-spin fa-2x" style="color:#2c3e50"></i></div>
+
+<div class="window-frame">
+    <div class="window-header">
+        <span><i class="fas fa-shipping-fast"></i> DETAIL SHIPPING</span>
+        <i class="fas fa-sync" onclick="fetchData()" style="cursor:pointer" title="Sync Data"></i>
+    </div>
+
+    <div class="filter-area">
+        <div class="input-group"><label>TGL PROSES</label><select id="selTgl"></select></div>
+        <div class="input-group"><label>KODE TOKO</label><input type="text" id="inKdStore" oninput="lookupStore()"></div>
+        <div class="input-group" style="grid-column: span 2;"><label>NAMA TOKO</label><input type="text" id="inNamaStore" readonly style="background:#f1f1f1;"></div>
+        <div class="input-group"><label>NO FAKTUR</label><select id="selFaktur"></select></div>
+        <div class="input-group"><label>KONTAINER</label><select id="selKon"></select></div>
+    </div>
+
+    <div class="action-area" style="display: flex; gap: 5px;">
+        <button class="btn-proses" onclick="renderTable()" style="flex: 2;">
+            <i class="fas fa-search"></i> TAMPILKAN
+        </button>
+        <button class="btn-proses" onclick="resetFilter()" style="flex: 1; background-color: #7f8c8d;">
+            <i class="fas fa-undo"></i> RESET
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th>LOK</th>
+                    <th>PLU</th>
+                    <th>DESCP</th>
+                    <th style="text-align:center">QTY</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="footer-qty">
+        <span>TOTAL QTY</span>
+        <span id="txtTotal">0</span>
+    </div>
+</div>
+
+<script>
+    const DATA_URL = "data.json"; 
+    let dbShipping = [];
+
+    async function fetchData() {
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            const response = await fetch(DATA_URL + "?t=" + new Date().getTime());
+            dbShipping = await response.json();
+            initTglDropdown();
+        } catch (err) { alert("Gagal memuat data: " + err.message); }
+        finally { document.getElementById('loader').style.display = 'none'; }
+    }
+
+    function initTglDropdown() {
+        const tglList = [...new Set(dbShipping.map(item => item.TGL_PROSES))].reverse();
+        document.getElementById('selTgl').innerHTML = '<option value="">Pilih</option>' + 
+            tglList.map(tgl => `<option value="${tgl}">${tgl}</option>`).join('');
+    }
+
+    function lookupStore() {
+        const kd = document.getElementById('inKdStore').value.toUpperCase();
+        const tgl = document.getElementById('selTgl').value;
+        const match = dbShipping.find(item => item.KD_STORE === kd);
+        if (match) {
+            document.getElementById('inNamaStore').value = match.NAMA_STORE;
+            const filtered = dbShipping.filter(item => item.TGL_PROSES === tgl && item.KD_STORE === kd);
+            document.getElementById('selFaktur').innerHTML = '<option value="">Pilih</option>' + [...new Set(filtered.map(item => item.NO_FAKTUR))].map(f => `<option value="${f}">${f}</option>`).join('');
+            document.getElementById('selKon').innerHTML = '<option value="">Pilih</option>' + [...new Set(filtered.map(item => item.KONTAINER))].map(k => `<option value="${k}">${k}</option>`).join('');
+        }
+    }
+
+    // Fungsi untuk mengosongkan semua filter dan tabel
+    function resetFilter() {
+        document.getElementById('selTgl').value = "";
+        document.getElementById('inKdStore').value = "";
+        document.getElementById('inNamaStore').value = "";
+        document.getElementById('selFaktur').innerHTML = "";
+        document.getElementById('selKon').innerHTML = "";
+        document.querySelector('#mainTable tbody').innerHTML = "";
+        document.getElementById('txtTotal').innerText = "0";
+    }
+
+    function renderTable() {
+        const tgl = document.getElementById('selTgl').value;
+        const kd = document.getElementById('inKdStore').value.toUpperCase();
+        const fkt = document.getElementById('selFaktur').value;
+        const kon = document.getElementById('selKon').value;
+
+        if (!tgl || !kd || !kon) return alert("Lengkapi filter");
+
+        let data = dbShipping.filter(item => 
+            String(item.TGL_PROSES) === tgl && String(item.KD_STORE) === kd && 
+            String(item.NO_FAKTUR) === fkt && String(item.KONTAINER) === kon
+        ).sort((a,b) => (a.LOKASI || "").localeCompare(b.LOKASI || ""));
+
+        const tbody = document.querySelector('#mainTable tbody');
+        tbody.innerHTML = "";
+        let total = 0;
+
+        data.forEach(row => {
+            const q = parseFloat(row.QTY_SHIPPING) || 0;
+            total += q;
+            tbody.innerHTML += `<tr>
+                <td style="font-weight:bold; color:#d4a017">${row.LOKASI || '-'}</td>
+                <td>${row.PLU}</td>
+                <td>${row.DESCP}</td>
+                <td class="col-qty">${q}</td>
+            </tr>`;
+        });
+        document.getElementById('txtTotal').innerText = total;
+    }
+
+    window.onload = fetchData;
+</script>
+</body>
+</html>
