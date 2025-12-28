@@ -76,14 +76,22 @@
     let dbShipping = [];
 
     async function fetchData() {
-        document.getElementById('loader').style.display = 'flex';
-        try {
-            const response = await fetch(DATA_URL + "?t=" + new Date().getTime());
-            dbShipping = await response.json();
-            initTglDropdown();
-        } catch (err) { alert("Gagal memuat data: " + err.message); }
-        finally { document.getElementById('loader').style.display = 'none'; }
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex';
+    try {
+        // Tambahkan "?t=" + timestamp untuk menghindari cache browser
+        const response = await fetch("data.json?t=" + new Date().getTime());
+        
+        if (!response.ok) throw new Error("File tidak ditemukan");
+        
+        dbShipping = await response.json();
+        initTglDropdown();
+    } catch (err) { 
+        alert("Gagal memuat data: " + err.message); 
+    } finally { 
+        loader.style.display = 'none'; 
     }
+}
 
     function initTglDropdown() {
         const tglList = [...new Set(dbShipping.map(item => item.TGL_PROSES))].reverse();
