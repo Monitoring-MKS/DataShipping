@@ -2,79 +2,88 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CEK KONTAINER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CEK KONTAINER </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Mengunci tinggi layar agar tidak bisa scroll body */
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, sans-serif; }
+        /* Menggunakan dvh agar akurat dengan layar HP yang memiliki address bar */
+        html, body { 
+            height: 100dvh; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            font-family: -apple-system, sans-serif; 
+            background-color: #2c3e50; /* Background gelap di luar frame */
+        }
         
         .window-frame { 
             display: flex; 
             flex-direction: column; 
-            height: 100vh; /* Paksa setinggi layar HP */
+            height: 100dvh; 
             max-width: 800px; 
             margin: auto; 
             background: #fff;
+            position: relative;
         }
         
-        /* Header Tipis */
-        .window-header { background: #2c3e50; color: white; padding: 5px 10px; font-size: 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .window-header { background: #2c3e50; color: white; padding: 6px 10px; font-size: 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         
-        /* Filter Ramping */
+        /* Filter tetap ramping agar hemat ruang */
         .filter-area { padding: 4px; background: #f8f9fa; border-bottom: 1px solid #ddd; flex-shrink: 0; }
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
         .input-group { display: flex; flex-direction: column; margin-bottom: 2px; }
         .input-group label { font-size: 7px; color: #777; font-weight: bold; margin-bottom: 1px; }
         
-        input, select { padding: 2px 4px; border: 1px solid #ccc; border-radius: 2px; font-size: 10px; height: 24px; outline: none; background: white; width: 100%; box-sizing: border-box; }
+        input, select { padding: 2px 4px; border: 1px solid #ccc; border-radius: 2px; font-size: 11px; height: 26px; outline: none; background: white; width: 100%; box-sizing: border-box; }
         input[readonly] { background: #eee; }
         
-        /* Tombol */
         .action-area { padding: 4px; display: flex; gap: 4px; background: #fff; flex-shrink: 0; }
-        .btn { border: none; padding: 6px; font-weight: bold; border-radius: 2px; cursor: pointer; font-size: 10px; width: 100%; color: white; display: flex; justify-content: center; align-items: center; gap: 4px; }
+        .btn { border: none; padding: 8px; font-weight: bold; border-radius: 2px; cursor: pointer; font-size: 10px; width: 100%; color: white; display: flex; justify-content: center; align-items: center; gap: 4px; }
         .btn-search { background-color: #2c3e50; flex: 2; }
         .btn-reset { background-color: #95a5a6; flex: 1; }
 
-        /* AREA TABEL: Hanya ini yang boleh scroll */
+        /* Tabel yang bisa scroll */
         .table-container { 
             flex: 1; 
-            overflow-y: auto; /* Scroll aktif di sini */
+            overflow-y: auto; 
             -webkit-overflow-scrolling: touch; 
             background: #fff; 
         }
         
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
-        
         thead th { 
-            background: #f1f3f5; padding: 4px 2px; border-bottom: 1px solid #2c3e50; 
+            background: #f1f3f5; padding: 5px 2px; border-bottom: 1px solid #2c3e50; 
             position: sticky; top: 0; text-align: left; font-size: 8px; color: #2c3e50; 
             z-index: 20; 
         }
 
         tbody td { 
-            padding: 4px 2px; border-bottom: 1px solid #f1f1f1; font-size: 9px; 
+            padding: 5px 2px; border-bottom: 1px solid #f1f1f1; font-size: 10px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
             line-height: 1.1;
         }
 
         .col-lok { width: 60px; font-weight: bold; color: #d35400; }
         .col-plu { width: 65px; color: #555; }
-        .col-desc { width: auto; white-space: normal; color: #222; font-size: 8px; }
-        .col-qty { width: 35px; background-color: #ebf5fb; color: #0d47a1; font-weight: bold; text-align: center; font-size: 11px; }
+        .col-desc { width: auto; white-space: normal; color: #222; font-size: 9px; }
+        .col-qty { width: 40px; background-color: #ebf5fb; color: #0d47a1; font-weight: bold; text-align: center; font-size: 12px; }
 
         .row-highlight { background-color: #fff9c4 !important; }
 
-        /* FOOTER: Terkunci di bawah layar */
+        /* FOOTER YANG DIPERBAIKI: Menggunakan Margin Bottom untuk Safe Area HP */
         .footer-qty { 
-            padding: 6px 15px; 
+            padding: 10px 15px; 
             background: #2c3e50; 
             color: white; 
             display: flex; 
             justify-content: space-between; 
             font-weight: bold; 
-            font-size: 12px; 
-            flex-shrink: 0; /* Mencegah footer mengecil atau hilang */
+            font-size: 14px; 
+            flex-shrink: 0; 
+            z-index: 30;
+            border-top: 2px solid #1a252f;
+            /* Tambahan padding bawah jika HP memiliki navigasi gesture */
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
         
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
@@ -87,17 +96,17 @@
 <div class="window-frame">
     <div class="window-header">
         <span><i class="fas fa-shipping-fast"></i> CEK KONTAINER V1.12.25.MKS</span>
-        <i class="fas fa-sync-alt" onclick="fetchData()"></i>
+        <i class="fas fa-sync-alt" onclick="fetchData()" style="cursor:pointer"></i>
     </div>
 
     <div class="filter-area">
         <div class="filter-grid">
-            <div class="input-group"><label>Tgl</label><select id="selTgl" onchange="lookupStore()"></select></div>
-            <div class="input-group"><label>Toko</label><input type="text" id="inKdStore" oninput="lookupStore()" placeholder="Kode"></div>
+            <div class="input-group"><label>TANGGAL</label><select id="selTgl" onchange="lookupStore()"></select></div>
+            <div class="input-group"><label>TOKO</label><input type="text" id="inKdStore" oninput="lookupStore()" placeholder="Kode"></div>
         </div>
-        <div class="input-group"><input type="text" id="inNamaStore" readonly placeholder="Nama Toko"></div>
+        <div class="input-group" style="margin: 2px 0;"><input type="text" id="inNamaStore" readonly placeholder="Nama Toko Otomatis"></div>
         <div class="filter-grid">
-            <div class="input-group"><label>Faktur</label><select id="selFaktur"></select></div>
+            <div class="input-group"><label>FAKTUR</label><select id="selFaktur"></select></div>
             <div class="input-group"><label>KONTAINER</label><select id="selKon"></select></div>
         </div>
     </div>
