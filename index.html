@@ -2,56 +2,65 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CEK ISI KONTAINER - MKS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CEK KONTAINER - MKS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #f0f2f5; padding: 0; margin: 0; overflow: hidden; }
-        .window-frame { background-color: #fff; max-width: 800px; margin: auto; height: 100vh; display: flex; flex-direction: column; }
+        /* Menggunakan dvh agar pas dengan layar HP */
+        html, body { height: 100dvh; margin: 0; padding: 0; overflow: hidden; font-family: -apple-system, sans-serif; background-color: #f0f2f5; }
         
-        /* Header Rapi */
-        .window-header { background: #2c3e50; color: white; padding: 8px 12px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .window-frame { display: flex; flex-direction: column; height: 100dvh; max-width: 800px; margin: auto; background: #fff; }
         
-        /* Area Filter Kembali ke Style Rapi */
-        .filter-area { padding: 8px; background: #f8f9fa; border-bottom: 1px solid #ddd; }
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .input-group { display: flex; flex-direction: column; margin-bottom: 4px; }
-        .input-group label { font-size: 9px; color: #555; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; }
-        input, select { padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; height: 32px; outline: none; background: white; width: 100%; box-sizing: border-box; }
+        /* Header Super Tipis */
+        .window-header { background: #2c3e50; color: white; padding: 4px 10px; font-size: 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        
+        /* Area Filter Ramping */
+        .filter-area { padding: 4px; background: #f8f9fa; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 2px; }
+        .input-group label { font-size: 7px; color: #555; font-weight: bold; margin-bottom: 1px; text-transform: uppercase; }
+        
+        input, select { padding: 2px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; height: 26px; outline: none; background: white; width: 100%; box-sizing: border-box; }
         input[readonly] { background: #e9ecef; color: #495057; }
         
-        /* Tombol Rapi */
-        .action-area { padding: 8px; display: flex; gap: 8px; background: #fff; }
-        .btn { border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; color: white; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        /* Tombol Compact */
+        .action-area { padding: 4px; display: flex; gap: 4px; background: #fff; flex-shrink: 0; }
+        .btn { border: none; padding: 6px; font-weight: bold; border-radius: 3px; cursor: pointer; font-size: 10px; width: 100%; color: white; display: flex; justify-content: center; align-items: center; gap: 4px; }
         .btn-search { background-color: #2c3e50; flex: 2; }
         .btn-reset { background-color: #95a5a6; flex: 1; }
 
-        /* Tabel Utama Terkunci */
-        .table-container { flex: 1; overflow-y: auto; background: #fff; position: relative; border-top: 1px solid #eee; }
+        /* Tabel Super Padat */
+        .table-container { flex: 1; overflow-y: auto; background: #fff; border-top: 1px solid #eee; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
         
         thead th { 
-            background: #f1f3f5; padding: 10px 4px; border-bottom: 2px solid #2c3e50; 
-            position: sticky; top: 0; text-align: left; font-size: 10px; color: #2c3e50; 
+            background: #f1f3f5; padding: 4px 2px; border-bottom: 1px solid #2c3e50; 
+            position: sticky; top: 0; text-align: left; font-size: 8px; color: #2c3e50; 
             z-index: 20; font-weight: bold;
         }
 
+        /* Jarak antar baris diperkecil agar muat banyak */
         tbody td { 
-            padding: 8px 4px; border-bottom: 1px solid #eee; font-size: 11px; 
+            padding: 3px 2px; border-bottom: 1px solid #f1f1f1; font-size: 9px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            line-height: 1.1;
         }
 
-        /* Pembagian Lebar Kolom Agar Garis Lurus */
-        .col-lok { width: 70px; font-weight: bold; color: #d35400; }
-        .col-plu { width: 80px; color: #555; }
-        .col-desc { width: auto; white-space: normal; color: #222; font-size: 10px; line-height: 1.2; }
-        .col-qty { width: 50px; background-color: #ebf5fb; color: #0d47a1; font-weight: bold; text-align: center; font-size: 13px; }
+        /* Ukuran kolom proporsional */
+        .col-lok { width: 55px; font-weight: bold; color: #d35400; }
+        .col-plu { width: 60px; color: #555; }
+        .col-desc { width: auto; white-space: normal; color: #222; font-size: 8px; line-height: 1; }
+        .col-qty { width: 35px; background-color: #ebf5fb; color: #0d47a1; font-weight: bold; text-align: center; font-size: 11px; }
 
-        /* Highlight */
         .row-highlight { background-color: #fff9c4 !important; }
 
-        /* Footer Rapi */
-        .footer-qty { padding: 10px 15px; background: #2c3e50; color: white; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
+        /* Footer Tetap Muncul di Bawah */
+        .footer-qty { 
+            padding: 6px 12px; background: #2c3e50; color: white; 
+            display: flex; justify-content: space-between; font-weight: bold; 
+            font-size: 12px; flex-shrink: 0;
+            padding-bottom: calc(6px + env(safe-area-inset-bottom)); /* Untuk iPhone modern */
+        }
         
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
     </style>
@@ -62,10 +71,8 @@
 
 <div class="window-frame">
     <div class="window-header">
-        <span><i class="fas fa-shipping-fast"></i> CEK ISI KONTAINER V29.12.25.MKS</span>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <i class="fas fa-sync-alt" onclick="fetchData()" style="cursor:pointer"></i>
-        </div>
+        <span><i class="fas fa-shipping-fast"></i> CEK KONTAINER V1.12.25.MKS</span>
+        <i class="fas fa-sync-alt" onclick="fetchData()" style="cursor:pointer"></i>
     </div>
 
     <div class="filter-area">
@@ -79,11 +86,10 @@
                 <input type="text" id="inKdStore" oninput="lookupStore()" placeholder="Ketik Kode">
             </div>
         </div>
-        <div class="input-group" style="margin-top: 4px;">
-            <label>Nama Toko</label>
-            <input type="text" id="inNamaStore" readonly>
+        <div class="input-group" style="margin-top: 2px;">
+            <input type="text" id="inNamaStore" readonly placeholder="Nama Toko">
         </div>
-        <div class="filter-grid" style="margin-top: 4px;">
+        <div class="filter-grid" style="margin-top: 2px;">
             <div class="input-group">
                 <label>No Faktur</label>
                 <select id="selFaktur"></select>
@@ -96,12 +102,8 @@
     </div>
 
     <div class="action-area">
-        <button class="btn btn-search" onclick="renderTable()">
-            <i class="fas fa-search"></i> TAMPILKAN
-        </button>
-        <button class="btn btn-reset" onclick="resetFilter()">
-            <i class="fas fa-undo"></i> RESET
-        </button>
+        <button class="btn btn-search" onclick="renderTable()">TAMPILKAN</button>
+        <button class="btn btn-reset" onclick="resetFilter()">RESET</button>
     </div>
 
     <div class="table-container">
@@ -127,39 +129,29 @@
 <script>
     let dbShipping = [];
 
-async function fetchData() {
-    document.getElementById('loader').style.display = 'flex';
-    
-    // Penanda waktu unik (Cache Buster) agar browser selalu ambil data terbaru
-    const cacheBuster = new Date().getTime(); 
-    
-    try {
-        // Tambahkan ?n= + cacheBuster di setiap pemanggilan file
-        const resCfg = await fetch(`config.json?n=${cacheBuster}`);
-        const cfg = await resCfg.json();
-        
-        const promises = [];
-        for (let i = 1; i <= cfg.total_parts; i++) {
-            // Tambahkan juga pada pemanggilan part data
-            promises.push(
-                fetch(`data_part${i}.json?n=${cacheBuster}`).then(r => r.json())
-            );
+    async function fetchData() {
+        document.getElementById('loader').style.display = 'flex';
+        const cacheBuster = new Date().getTime(); 
+        try {
+            const resCfg = await fetch(`config.json?n=${cacheBuster}`);
+            const cfg = await resCfg.json();
+            const promises = [];
+            for (let i = 1; i <= cfg.total_parts; i++) {
+                promises.push(fetch(`data_part${i}.json?n=${cacheBuster}`).then(r => r.json()));
+            }
+            const allData = await Promise.all(promises);
+            dbShipping = allData.flat();
+            initTgl();
+        } catch (e) { 
+            console.error("Gagal memuat data:", e); 
+        } finally { 
+            document.getElementById('loader').style.display = 'none'; 
         }
-        
-        const allData = await Promise.all(promises);
-        dbShipping = allData.flat();
-        
-        console.log("Data berhasil diperbarui: ", cfg.last_update);
-        initTgl();
-    } catch (e) { 
-        console.error("Gagal memuat data:", e); 
-    } finally { 
-        document.getElementById('loader').style.display = 'none'; 
     }
-}
+
     function initTgl() {
         const tgls = [...new Set(dbShipping.map(x => x.TGL_PROSES))].sort((a,b) => new Date(b) - new Date(a));
-        document.getElementById('selTgl').innerHTML = '<option value="">Pilih Tgl</option>' + tgls.map(t => `<option value="${t}">${t}</option>`).join('');
+        document.getElementById('selTgl').innerHTML = '<option value="">Pilih</option>' + tgls.map(t => `<option value="${t}">${t}</option>`).join('');
     }
 
     function lookupStore() {
@@ -168,8 +160,8 @@ async function fetchData() {
         const f = dbShipping.filter(x => x.KD_STORE === kd && x.TGL_PROSES === tgl);
         if (f.length > 0) {
             document.getElementById('inNamaStore').value = f[0].NAMA_STORE;
-            document.getElementById('selFaktur').innerHTML = '<option value="">Pilih Faktur</option>' + [...new Set(f.map(x => x.NO_FAKTUR))].map(x => `<option value="${x}">${x}</option>`).join('');
-            document.getElementById('selKon').innerHTML = '<option value="">Pilih Kon</option>' + [...new Set(f.map(x => x.KONTAINER))].map(x => `<option value="${x}">${x}</option>`).join('');
+            document.getElementById('selFaktur').innerHTML = '<option value="">Pilih</option>' + [...new Set(f.map(x => x.NO_FAKTUR))].map(x => `<option value="${x}">${x}</option>`).join('');
+            document.getElementById('selKon').innerHTML = '<option value="">Pilih</option>' + [...new Set(f.map(x => x.KONTAINER))].map(x => `<option value="${x}">${x}</option>`).join('');
         }
     }
 
@@ -177,8 +169,7 @@ async function fetchData() {
         const tgl = document.getElementById('selTgl').value;
         const kd = document.getElementById('inKdStore').value.toUpperCase();
         const kon = document.getElementById('selKon').value;
-        
-        if (!tgl || !kd || !kon) return alert("Silahkan pilih Tanggal, Kode Toko, dan Kontainer terlebih dahulu.");
+        if (!tgl || !kd || !kon) return alert("Lengkapi Filter!");
 
         const data = dbShipping.filter(x => x.TGL_PROSES === tgl && x.KD_STORE === kd && x.KONTAINER === kon)
                      .sort((a,b) => (a.LOKASI || "").localeCompare(b.LOKASI || ""));
@@ -186,12 +177,6 @@ async function fetchData() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = "";
         let tot = 0;
-
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Data tidak ditemukan</td></tr>';
-            document.getElementById('txtTotal').innerText = "0";
-            return;
-        }
 
         data.forEach(r => {
             const q = parseFloat(r.QTY_SHIPPING) || 0;
@@ -201,27 +186,13 @@ async function fetchData() {
                 document.querySelectorAll('.row-highlight').forEach(el => el.classList.remove('row-highlight'));
                 this.classList.add('row-highlight'); 
             };
-            tr.innerHTML = `
-                <td class="col-lok">${r.LOKASI || '-'}</td>
-                <td class="col-plu">${r.PLU}</td>
-                <td class="col-desc">${r.DESCP}</td>
-                <td class="col-qty">${q}</td>
-            `;
+            tr.innerHTML = `<td class="col-lok">${r.LOKASI || '-'}</td><td>${r.PLU}</td><td class="col-desc">${r.DESCP}</td><td class="col-qty">${q}</td>`;
             tbody.appendChild(tr);
         });
         document.getElementById('txtTotal').innerText = tot.toLocaleString();
     }
 
-    function resetFilter() {
-        document.getElementById('selTgl').value = "";
-        document.getElementById('inKdStore').value = "";
-        document.getElementById('inNamaStore').value = "";
-        document.getElementById('selFaktur').innerHTML = "";
-        document.getElementById('selKon').innerHTML = "";
-        document.getElementById('tableBody').innerHTML = "";
-        document.getElementById('txtTotal').innerText = "0";
-    }
-
+    function resetFilter() { location.reload(); }
     window.onload = fetchData;
 </script>
 </body>
