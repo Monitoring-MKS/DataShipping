@@ -127,27 +127,36 @@
 <script>
     let dbShipping = [];
 
-    async function fetchData() {
-        document.getElementById('loader').style.display = 'flex';
-        const timestamp = new Date().getTime();
-        try {
-            const resCfg = await fetch(`config.json?n=${timestamp}`);
-            const cfg = await resCfg.json();
-            const promises = [];
-            for (let i = 1; i <= cfg.total_parts; i++) {
-                promises.push(fetch(`data_part${i}.json?n=${timestamp}`).then(r => r.json()));
-            }
-            const allData = await Promise.all(promises);
-            dbShipping = allData.flat();
-            initTgl();
-        } catch (e) { 
-            console.error(e); 
-            alert("Gagal memuat data harian.");
-        } finally { 
-            document.getElementById('loader').style.display = 'none'; 
+async function fetchData() {
+    document.getElementById('loader').style.display = 'flex';
+    
+    // Penanda waktu unik (Cache Buster) agar browser selalu ambil data terbaru
+    const cacheBuster = new Date().getTime(); 
+    
+    try {
+        // Tambahkan ?n= + cacheBuster di setiap pemanggilan file
+        const resCfg = await fetch(`config.json?n=${cacheBuster}`);
+        const cfg = await resCfg.json();
+        
+        const promises = [];
+        for (let i = 1; i <= cfg.total_parts; i++) {
+            // Tambahkan juga pada pemanggilan part data
+            promises.push(
+                fetch(`data_part${i}.json?n=${cacheBuster}`).then(r => r.json())
+            );
         }
+        
+        const allData = await Promise.all(promises);
+        dbShipping = allData.flat();
+        
+        console.log("Data berhasil diperbarui: ", cfg.last_update);
+        initTgl();
+    } catch (e) { 
+        console.error("Gagal memuat data:", e); 
+    } finally { 
+        document.getElementById('loader').style.display = 'none'; 
     }
-
+}
     function initTgl() {
         const tgls = [...new Set(dbShipping.map(x => x.TGL_PROSES))].sort((a,b) => new Date(b) - new Date(a));
         document.getElementById('selTgl').innerHTML = '<option value="">Pilih Tgl</option>' + tgls.map(t => `<option value="${t}">${t}</option>`).join('');
