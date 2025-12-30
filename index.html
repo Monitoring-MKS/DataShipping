@@ -154,17 +154,25 @@
         document.getElementById('selTgl').innerHTML = '<option value="">Pilih</option>' + tgls.map(t => `<option value="${t}">${t}</option>`).join('');
     }
 
-    function lookupStore() {
-        const tgl = document.getElementById('selTgl').value;
-        const kd = document.getElementById('inKdStore').value.toUpperCase();
-        const f = dbShipping.filter(x => x.KD_STORE === kd && x.TGL_PROSES === tgl);
-        if (f.length > 0) {
-            document.getElementById('inNamaStore').value = f[0].NAMA_STORE;
-            document.getElementById('selFaktur').innerHTML = '<option value="">Pilih</option>' + [...new Set(f.map(x => x.NO_FAKTUR))].map(x => `<option value="${x}">${x}</option>`).join('');
-            document.getElementById('selKon').innerHTML = '<option value="">Pilih</option>' + [...new Set(f.map(x => x.KONTAINER))].map(x => `<option value="${x}">${x}</option>`).join('');
-        }
+function lookupStore() {
+    const tgl = document.getElementById('selTgl').value;
+    const kd = document.getElementById('inKdStore').value.toUpperCase();
+    const f = dbShipping.filter(x => x.KD_STORE === kd && x.TGL_PROSES === tgl);
+    
+    if (f.length > 0) {
+        document.getElementById('inNamaStore').value = f[0].NAMA_STORE;
+        
+        // Mengurutkan No Faktur secara alfabetis/angka
+        const listFaktur = [...new Set(f.map(x => x.NO_FAKTUR))].sort();
+        document.getElementById('selFaktur').innerHTML = '<option value="">Pilih</option>' + 
+            listFaktur.map(x => `<option value="${x}">${x}</option>`).join('');
+        
+        // Mengurutkan Kontainer dari terkecil ke terbesar
+        const listKon = [...new Set(f.map(x => x.KONTAINER))].sort();
+        document.getElementById('selKon').innerHTML = '<option value="">Pilih</option>' + 
+            listKon.map(x => `<option value="${x}">${x}</option>`).join('');
     }
-
+}
     function renderTable() {
         const tgl = document.getElementById('selTgl').value;
         const kd = document.getElementById('inKdStore').value.toUpperCase();
